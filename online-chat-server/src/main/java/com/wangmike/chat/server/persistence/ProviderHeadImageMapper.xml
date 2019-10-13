@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.ProviderHeadImageMapper">
+
+
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.ProviderHeadImage">
+    insert into provider_head_image (provider_id, hear_image, audit_state
+      )
+    values (#{providerId,jdbcType=VARCHAR}, #{hearImage,jdbcType=VARCHAR}, #{auditState,jdbcType=VARCHAR}
+      )
+  </insert>
+
+    <select id="getProHeadsById" parameterType="string" resultType="string">
+        select hear_image from provider_head_image where provider_id = #{providerId} and audit_state ='1'
+    </select>
+
+</mapper>

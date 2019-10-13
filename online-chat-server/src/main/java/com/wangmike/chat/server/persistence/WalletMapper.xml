@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.WalletMapper">
+
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.Wallet">
+    insert into wallet (wallet_id, total_amount,wallet_type,create_time)
+    values (#{walletId,jdbcType=VARCHAR}, #{totalAmount,jdbcType=DECIMAL},
+    #{walletType,jdbcType=VARCHAR},now())
+  </insert>
+
+    <update id="decreaseMoney">
+        update wallet set total_amount = total_amount - #{totalAmount}
+        where wallet_id = #{walletId}
+    </update>
+
+    <update id="increasMoney">
+         update wallet set total_amount = total_amount + #{totalAmount}
+        where wallet_id = #{walletId}
+    </update>
+
+</mapper>

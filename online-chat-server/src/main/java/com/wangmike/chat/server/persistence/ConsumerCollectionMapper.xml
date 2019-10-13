@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.ConsumerCollectionMapper">
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.ConsumerCollection">
+    insert into consumer_collection (consumer_id, provider_id, create_time
+      )
+    values (#{consumerId,jdbcType=VARCHAR}, #{providerId,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+
+    <delete id="unmarkProvider" parameterType="map">
+        delete from consumer_collection where provider_id = #{providerId} and consumer_id = #{consumerId}
+    </delete>
+
+    <select id="queryIsMark" parameterType="map" resultType="int">
+        select count(1) from consumer_collection where provider_id = #{providerId} and consumer_id = #{consumerId}
+    </select>
+</mapper>

@@ -1,0 +1,24 @@
+server:
+  port: 8080
+    #ssl:
+    #key-store: 20190728.pfx
+    #key-store-password: Hg2WSbPo
+    #max-http-header-size: 102400
+    #tomcat:
+  #max-http-post-size: 102400
+mybatis:
+  datasource:
+    driver-class: com.mysql.jdbc.Driver
+    jdbc-url: jdbc:mysql://47.103.125.154:3306/online_chat?characterEncoding=utf8&useSSL=false
+    data-base-user: root
+    data-base-password: 1qaz@WSX
+    initial-pool-size: 5
+    min-idle: 5
+    max-pool-size: 20
+    max-wait-millis: 6000
+file:
+  upload:
+    path: D:\\flie
+# 平台占抽成比例，用户下单10个花瓣，到服务员钱包6个
+withdraw:
+  money: 0.6

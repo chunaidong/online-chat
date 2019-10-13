@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.TypeCollectionMapper">
+
+
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.TypeCollection">
+    insert into type_collection (provider_id, type_id, create_time
+      )
+    values (#{providerId,jdbcType=VARCHAR}, #{typeId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <select id="getProviderTypes" parameterType="string" resultType="com.wangmike.chat.common.entity.ProviderType">
+        select
+               tc.total as total,
+               pt.type_id as typeId,
+               pt.type_name as typeName,
+               pt.type_price as typePrice,
+               tc.file_path as filePath,
+               tc.voice_audit as voiceAudit
+          from
+          type_collection tc
+          inner join
+          provider_type pt
+          on tc.type_id = pt.type_id
+          where tc.provider_id = #{providerId}
+    </select>
+
+    <delete id="deleteTypes" parameterType="string">
+        delete from type_collection where provider_id =#{openId}
+    </delete>
+</mapper>

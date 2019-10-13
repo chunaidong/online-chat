@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.ConsumerMapper">
+
+
+
+    <select id="judgeIsRegistry" parameterType="string" resultType="int">
+        select count(1) from consumer where consumer_id = #{openId}
+    </select>
+
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.Consumer">
+    insert into consumer (consumer_id, consumer_nick_name, consumer_head_image,
+      consumer_sex, consumer_vip_level, consumer_birth_day,
+      consumer_last_login_lat, consumer_last_login_lng,
+      consumer_user_role, provider_id, wallet_id,
+      consumer_content, create_time)
+    values (#{consumerId,jdbcType=VARCHAR}, #{consumerNickName,jdbcType=VARCHAR}, #{consumerHeadImage,jdbcType=VARCHAR},
+      #{consumerSex,jdbcType=VARCHAR}, #{consumerVipLevel,jdbcType=INTEGER}, #{consumerBirthDay,jdbcType=TIMESTAMP},
+      #{consumerLastLoginLat,jdbcType=DECIMAL}, #{consumerLastLoginLng,jdbcType=DECIMAL},
+      #{consumerUserRole,jdbcType=VARCHAR}, #{providerId,jdbcType=VARCHAR}, #{walletId,jdbcType=VARCHAR},
+      #{consumerContent,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wangmike.chat.common.entity.Consumer">
+        update consumer
+        <set>
+            <if test="consumerNickName != null">
+                consumer_nick_name = #{consumerNickName,jdbcType=VARCHAR},
+            </if>
+            <if test="consumerHeadImage != null">
+                consumer_head_image = #{consumerHeadImage,jdbcType=VARCHAR},
+            </if>
+            <if test="consumerSex != null">
+                consumer_sex = #{consumerSex,jdbcType=VARCHAR},
+            </if>
+            <if test="consumerVipLevel != null">
+                consumer_vip_level = #{consumerVipLevel,jdbcType=INTEGER},
+            </if>
+            <if test="consumerBirthDay != null">
+                consumer_birth_day = #{consumerBirthDay,jdbcType=TIMESTAMP},
+            </if>
+            <if test="consumerLastLoginLat != null">
+                consumer_last_login_lat = #{consumerLastLoginLat,jdbcType=DECIMAL},
+            </if>
+            <if test="consumerLastLoginLng != null">
+                consumer_last_login_lng = #{consumerLastLoginLng,jdbcType=DECIMAL},
+            </if>
+            <if test="consumerUserRole != null">
+                consumer_user_role = #{consumerUserRole,jdbcType=VARCHAR},
+            </if>
+            <if test="providerId != null">
+                provider_id = #{providerId,jdbcType=VARCHAR},
+            </if>
+            <if test="walletId != null">
+                wallet_id = #{walletId,jdbcType=VARCHAR},
+            </if>
+            <if test="consumerContent != null">
+                consumer_content = #{consumerContent,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where consumer_id = #{consumerId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getRestAmount" parameterType="string" resultType="map">
+         select total_amount,wallet_id from wallet where wallet_id = (select wallet_id from consumer where consumer_id = #{openId})
+    </select>
+
+    <update id="updateStateToWaitConfirm">
+        update consumer_order
+        set start_chat_time = now(),
+        order_state = '2'
+        where order_id = #{orderId}
+        and consumer_id = #{openId}
+        and order_state ='1'
+    </update>
+     <update id="updateStateToChatting">
+          update consumer_order
+        set confirm_start_chat_time = now(),
+        order_state = '3'
+        where order_id = #{orderId}
+        and consumer_id = #{openId}
+        and order_state ='2'
+     </update>
+
+
+    <select id="getProviderWalletId" parameterType="string" resultType="string">
+        select wallet_id from provider where provider_id = #{providerId}
+    </select>
+
+    <select id="getIsExist" parameterType="string" resultType="int">
+        select count(1) from consumer where consumer_id = #{token}
+    </select>
+
+    <select id="getAllConsumerList" resultType="com.wangmike.chat.common.response.ConsumerForAdmin">
+        SELECT
+             consumer_nick_name as consumerNickName,
+             consumer_sex as sex,
+             consumer_birth_day as birthDay,
+             consumer_vip_level as level,
+             create_time as registryDay
+          from
+          consumer
+          order by create_time desc
+    </select>
+
+    <select id="findConsumerBalance" parameterType="string" resultType="decimal">
+        select total_amount from wallet where wallet_id = (select  wallet_id from consumer where consumer_id =#{openId})
+    </select>
+
+</mapper>

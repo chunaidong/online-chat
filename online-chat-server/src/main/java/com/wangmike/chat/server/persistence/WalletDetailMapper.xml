@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.WalletDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.wangmike.chat.common.entity.WalletDetail">
+        <id column="detail_id" jdbcType="VARCHAR" property="detailId" />
+        <result column="amount" jdbcType="DECIMAL" property="amount" />
+        <result column="trade_type" jdbcType="VARCHAR" property="tradeType" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+        <result column="create_role" jdbcType="VARCHAR" property="createRole" />
+        <result column="wallet_id" jdbcType="VARCHAR" property="walletId" />
+        <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
+        <result column="trade_state" jdbcType="VARCHAR" property="tradeState" />
+        <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    detail_id, amount, trade_type, create_time, create_user, create_role, wallet_id,
+    out_trade_no, trade_state,order_id
+  </sql>
+
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.WalletDetail">
+    insert into wallet_detail (detail_id, amount, trade_type,
+      create_time, create_user, create_role,
+      wallet_id, out_trade_no, trade_state,order_id
+      )
+    values (#{detailId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{tradeType,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{createRole,jdbcType=VARCHAR},
+      #{walletId,jdbcType=VARCHAR}, #{outTradeNo,jdbcType=VARCHAR}, #{tradeState,jdbcType=VARCHAR},#{orderId,jdbcType=VARCHAR}
+      )
+  </insert>
+    <select id="getWalletDetailByOrderId" parameterType="string" resultType="string">
+        select
+            distinct
+            wallet_id
+        from wallet_detail
+        where order_id = #{orderId}
+    </select>
+</mapper>

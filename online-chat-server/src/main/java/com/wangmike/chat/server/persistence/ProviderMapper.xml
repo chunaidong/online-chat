@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangmike.chat.server.persistence.ProviderMapper">
+
+
+    <select id="judgeIsRegistry" parameterType="string" resultType="int">
+        select count(1) from provider where provider_id = #{openId}
+    </select>
+
+    <insert id="insert" parameterType="com.wangmike.chat.common.entity.Provider">
+    insert into provider (provider_id, provider_nick_name, provider_wechat_no,
+      provider_birth_day, provider_sex, provider_stature,
+      provider_profession, provider_emotion, provider_content,
+      provider_signature, provider_online_state,
+      provider_isable, provider_last_login_lat,
+      provider_last_login_lng, provider_aduit_state,
+      wallet_id, provider_raw_wechat_no, audio_msg,
+      provider_age, create_time,provider_level,provider_raw_content)
+    values (#{providerId,jdbcType=VARCHAR}, #{providerNickName,jdbcType=VARCHAR}, #{providerWechatNo,jdbcType=VARCHAR},
+      #{providerBirthDay,jdbcType=TIMESTAMP}, #{providerSex,jdbcType=VARCHAR}, #{providerStature,jdbcType=VARCHAR},
+      #{providerProfession,jdbcType=VARCHAR}, #{providerEmotion,jdbcType=VARCHAR}, #{providerContent,jdbcType=VARCHAR},
+      #{providerSignature,jdbcType=VARCHAR}, #{providerOnlineState,jdbcType=VARCHAR},
+      #{providerIsable,jdbcType=VARCHAR}, #{providerLastLoginLat,jdbcType=DECIMAL},
+      #{providerLastLoginLng,jdbcType=DECIMAL}, #{providerAduitState,jdbcType=VARCHAR},
+      #{walletId,jdbcType=VARCHAR}, #{providerRawWechatNo,jdbcType=VARCHAR}, #{audioMsg,jdbcType=VARCHAR},
+      #{providerAge,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},0,#{providerContent,jdbcType=VARCHAR},#{contentAudit})
+  </insert>
+
+    <select id="getProviderListBylevel" parameterType="com.wangmike.chat.common.request.ProviderListRequest"
+            resultType="com.wangmike.chat.common.response.ProviderResponseForList">
+        select
+         pro.provider_id as providerId,
+         pro.provider_nick_name as providerNickName,
+         pro.provider_age as providerAge,
+         pro.provider_sex as providerSex,
+         pro.provider_level as providerLevel,
+         pro.provider_content as providerContent,
+         0.00 as distance
+         from provider pro where 1=1
+        <if test="sex != null and sex != 'ALL'">
+            AND provider_sex = #{sex}
+        </if>
+        <if test="startAge != null">
+            AND provider_age &gt;= #{startAge}
+        </if>
+        <if test="endAge != null">
+            AND provider_age &lt;= #{endAge}
+        </if>
+        <if test="emotion != null and emotion != 'ALL'">
+            AND provider_emotion = #{emotion}
+        </if>
+        order by provider_level desc
+    </select>
+
+    <select id="getProviderListByDistance" parameterType="com.wangmike.chat.common.request.ProviderListRequest"
+            resultType="com.wangmike.chat.common.response.ProviderResponseForList">
+        select
+        pro.provider_id as providerId,
+        pro.provider_nick_name as providerNickName,
+        pro.provider_age as providerAge,
+        pro.provider_sex as providerSex,
+        pro.provider_level as providerLevel,
+        pro.provider_content as providerContent,
+        (
+        6371 * acos(
+        cos( radians( #{consumerLoginLat} ) ) * cos( radians( pro.provider_last_login_lat ) ) * cos( radians( pro.provider_last_login_lng )
+        - radians( #{consumerLoginLng} ) ) + sin( radians( #{consumerLoginLat} ) ) * sin( radians( pro.provider_last_login_lat ) )
+        )
+        ) AS distance
+        from provider pro where 1=1
+        <if test="sex != null and sex != 'ALL'">
+            AND provider_sex = #{sex}
+        </if>
+        <if test="startAge != null">
+            AND provider_age &gt;= #{startAge}
+        </if>
+        <if test="endAge != null">
+            AND provider_age &lt;= #{endAge}
+        </if>
+        <if test="emotion != null and emotion != 'ALL'">
+            AND provider_emotion = #{emotion}
+        </if>
+        order by provider_level desc,distance asc
+    </select>
+
+    <select id="getProviderDetail" parameterType="string" resultType="com.wangmike.chat.common.response.ProviderResponseDetail">
+         select
+            pro.provider_id as providerId,
+            pro.provider_nick_name as providerNickName,
+            pro.provider_age as providerAge,
+            pro.provider_sex as providerSex,
+            pro.provider_level as providerLevel,
+            pro.provider_content as providerContent,
+            pro.provider_stature as providerStature,
+            pro.provider_profession as providerProfession,
+            pro.provider_signature as providerSignature
+          from
+          provider pro
+          where pro.provider_id = #{providerId}
+    </select>
+
+    <select id="getProviderForMy" resultType="com.wangmike.chat.common.response.ProviderResponseForMy"
+            parameterType="string">
+         select
+            pro.provider_id as providerId,
+            pro.provider_nick_name as providerNickName,
+            pro.provider_age as providerAge,
+            pro.provider_sex as providerSex,
+            pro.provider_content as providerContent,
+            pro.provider_raw_content as providerRawContent,
+            pro.provider_emotion as providerEmotion,
+            pro.provider_birth_day as providerBirthDay,
+            pro.provider_signature as providerSignature,
+            pro.provider_raw_wechat_no as providerRawWechatNo,
+            pro.provider_wechat_no as providerWechatNo
+          from
+          provider pro
+          where pro.provider_id = #{providerId}
+    </select>
+
+    <select id="getMyFlower" parameterType="string" resultType="decimal">
+        select total_amount from wallet where wallet_id = (
+            select wallet_id from provider where provider_id = #{openId}
+        )
+    </select>
+
+    <select id="getAllProviderTypeList" resultType="com.wangmike.chat.common.entity.ProviderType">
+        select
+            type_id as typeId,
+            type_name as typeName,
+            type_price as typePrice
+        from
+        provider_type
+        where type_type = '0'
+    </select>
+    <select id="getMyFlowerPool" resultType="com.wangmike.chat.common.response.FlowerPool">
+         select
+            wd.create_time as detailDate,
+            case wd.trade_type when '3' then '提现'
+             when '4' then '收入' end as tradeType,
+            pt.type_name as providerType,
+            wd.amount as detailAmount
+          from
+            wallet_detail wd
+            inner join consumer_order co
+            on co.order_id = wd.order_id
+            inner join provider_type pt
+            on pt.type_id = co.provider_type
+            where wd.wallet_id = (
+                select wallet_id from provider where provider_id = #{openId}
+            )
+            and (wd.trade_type ='3' or wd.trade_type = '4')
+
+            order by wd.create_time desc
+
+    </select>
+
+    <update id="updateData" parameterType="com.wangmike.chat.common.entity.Provider">
+        update provider
+        <set>            
+            <if test="providerNickName != null">
+                provider_nick_name = #{providerNickName,jdbcType=VARCHAR},
+            </if>
+            <if test="providerWechatNo != null">
+                provider_wechat_no = #{providerWechatNo,jdbcType=VARCHAR},
+            </if>
+            <if test="providerBirthDay != null">
+                provider_birth_day = #{providerBirthDay,jdbcType=TIMESTAMP},
+            </if>
+            <if test="providerSex != null">
+                provider_sex = #{providerSex,jdbcType=VARCHAR},
+            </if>
+            <if test="providerStature != null">
+                provider_stature = #{providerStature,jdbcType=VARCHAR},
+            </if>
+            <if test="providerProfession != null">
+                provider_profession = #{providerProfession,jdbcType=VARCHAR},
+            </if>
+            <if test="providerEmotion != null">
+                provider_emotion = #{providerEmotion,jdbcType=VARCHAR},
+            </if>
+            <if test="providerContent != null">
+                provider_content = #{providerContent,jdbcType=VARCHAR},
+            </if>
+            <if test="providerSignature != null">
+                provider_signature = #{providerSignature,jdbcType=VARCHAR},
+            </if>
+            <if test="providerOnlineState != null">
+                provider_online_state = #{providerOnlineState,jdbcType=VARCHAR},
+            </if>
+            <if test="providerIsable != null">
+                provider_isable = #{providerIsable,jdbcType=VARCHAR},
+            </if>
+            <if test="providerLastLoginLat != null">
+                provider_last_login_lat = #{providerLastLoginLat,jdbcType=DECIMAL},
+            </if>
+            <if test="providerLastLoginLng != null">
+                provider_last_login_lng = #{providerLastLoginLng,jdbcType=DECIMAL},
+            </if>
+            <if test="providerAduitState != null">
+                provider_aduit_state = #{providerAduitState,jdbcType=VARCHAR},
+            </if>
+            <if test="walletId != null">
+                wallet_id = #{walletId,jdbcType=VARCHAR},
+            </if>
+            <if test="providerRawWechatNo != null">
+                provider_raw_wechat_no = #{providerRawWechatNo,jdbcType=VARCHAR},
+            </if>
+            <if test="providerRawContent != null">
+                provider_raw_content = #{providerRawContent,jdbcType=VARCHAR},
+            </if>
+            <if test="contentAudit != null">
+                content_audit = #{contentAudit,jdbcType=VARCHAR},
+            </if>
+            <if test="audioMsg != null">
+                audio_msg = #{audioMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="providerAge != null">
+                provider_age = #{providerAge,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where provider_id = #{providerId}
+    </update>
+
+    <select id="getSortList" parameterType="string"
+            resultType="com.wangmike.chat.common.response.ProviderResponseForSort">
+        select
+            pro.provider_id as providerId,
+            pro.provider_nick_name as providerNickName,
+            pro.provider_age as providerAge,
+            pro.provider_sex as providerSex,
+            wall.total_amount as totalAmount
+          from
+          provider pro,(select wallet_id,total_amount from wallet where wallet_type ='1'
+          order by total_amount desc,create_time desc limit 10) wall
+          where pro.wallet_id = wall.wallet_id
+    </select>
+
+    <select id="getProviderOrderList" resultType="com.wangmike.chat.common.response.ConsumerResponseForOrderList"
+            parameterType="com.wangmike.chat.common.request.ProviderOrderListRequest">
+
+            select
+                con.consumer_head_image as consumerHeadImage,
+                con.consumer_nick_name as consumerNickName,
+                con.consumer_birth_day as consumerBirthDay,
+                con.consumer_vip_level as consumerVipLevel,
+                con.consumer_sex as consumerSex,
+                con.consumer_content as consumerContent,
+                co.expact_start_time as expactStartTime,
+                co.provider_time as providerTime,
+                co.order_state as orderState,
+                pt.type_name as providerType,
+                co.order_id as orderId
+
+            from
+             consumer_order co
+             inner join
+             consumer con on co.consumer_id = con.consumer_id
+             inner join
+             provider_type pt on co.provider_type = pt.type_id
+            where
+                co.provider_id = #{openId}
+            <if test="type != null and type != 'ALL'">
+                and order_state = #{type}
+            </if>
+            order by co.order_time desc
+    </select>
+
+    <select id="queryCount" parameterType="string" resultType="map">
+         select
+            IFNULL(sum(case when co.order_state = '0' then 1 else 0 end),0) as accessCount,
+            IFNULL(sum(case when co.order_state = '1' then 1 else 0 end),0) as chatCount,
+            IFNULL(sum(case when co.order_state = '3' then 1 else 0 end),0) as chatingCount,
+            IFNULL(sum(case when co.order_state = '4' then 1 else 0 end),0) as finishCount
+          from
+           consumer_order co
+           where
+           co.provider_id = #{openId}
+    </select>
+
+    <update id="accessOrder">
+        update consumer_order
+        set receive_time = now(),
+        order_state = '1'
+        where order_id = #{orderId}
+        and provider_id = #{openId}
+        and order_state ='0'
+
+    </update>
+
+    <update id="onlineState">
+        update provider
+        set provider_online_state = '1'
+        where provider_id =#{providerId}
+    </update>
+
+    <update id="offlineState">
+        update provider
+        set provider_online_state = '0'
+        where provider_id =#{providerId}
+    </update>
+
+    <select id="queryWaitAuditList" parameterType="string"
+    resultType="string">
+        select
+            head_image
+          from
+            provider_head_image
+           where provider_id = #{providerId}
+           and audit_state = '2'
+    </select>
+
+    <select id="queryWaitProvider"  resultType="map">
+        select
+            provider_id as providerId,
+            provider_nick_name as providerNickName,
+            '微信号' as auditType,
+            provider_wechat_no  as providerWechatNo,
+            provider_raw_wechat_no as providerRawWechatNo
+         from
+         provider
+         where provider_aduit_state = '3'
+    </select>
+
+    <delete id="removeHeadImage" parameterType="string">
+        delete from provider_head_image where head_image = #{finalPath}
+    </delete>
+
+    <update id="auditHeadImage">
+        update provider_head_image set audit_state = #{type}
+        where provider_id = #{providerId}
+    </update>
+
+    <update id="auditWechatNo">
+        update provider
+        <set>
+            <if test="type == '4'">
+                provider_aduit_state = #{type},
+            </if>
+            <if test="type =='5'">
+                provider_aduit_state = #{type},
+                provider_raw_wechat_no = provider_wechat_no
+            </if>
+        </set>
+        where provider_id = #{providerId}
+    </update>
+    <update id="auditContent">
+        update provider
+          set content_audit = #{type}
+          <if test="type == '2'">
+              ,provider_raw_content = provider_content
+          </if>
+          where provider_id = #{providerId}
+     </update>
+
+    <select id="getRestAmount" resultType="decimal">
+        select ifnull(sum(total_amount),0) from wallet
+    </select>
+
+    <select id="getTotalReceive" resultType="decimal">
+        select ifnull(sum(amount),0) from wallet_detail where  trade_type = '0'
+    </select>
+
+    <select id="getWithDrawTotal" resultType="decimal">
+        select ifnull(sum(amount),0) from wallet_detail where trade_type = '3'
+    </select>
+
+    <select id="getProReceive" resultType="decimal">
+        select ifnull(sum(amount),0) from wallet_detail where trade_type = '4'
+    </select>
+
+    <select id="queryProviderType" resultType="com.wangmike.chat.common.entity.ProviderType">
+        select
+            type_id as typeId,
+            type_name as typeName,
+            type_price as typePrice
+            from
+            provider_type
+            where type_type ='0'
+    </select>
+
+    <insert id="insertProviderType" parameterType="com.wangmike.chat.common.entity.ProviderType">
+        insert into provider_type(type_id,type_name,type_price,type_type)
+        values(#{typeId},#{typeName},#{typePrice},'0')
+    </insert>
+
+    <update id="updateProviderType" parameterType="com.wangmike.chat.common.entity.ProviderType">
+        update provider_type set type_name = #{typeName},type_price=#{typePrice}
+        where type_id = #{typeId}
+    </update>
+
+    <delete id="deleteProviderType" parameterType="string">
+        delete from provider_type where type_id = #{typeId}
+    </delete>
+
+    <update id="updateType" parameterType="com.wangmike.chat.common.entity.TypeCollection">
+        udpate type_collection
+        set file_path = #{filePath}
+        ,voice_audit = #{voiceAudit}
+        where provider_id = #{providerId}
+        and type_id = #{typeId}
+    </update>
+
+    <update id="providerPass" parameterType="string">
+        update provider set provider_aduit_state = '2',provider_online_state = '0'
+        where provider_id = #{providerId}
+    </update>
+
+    <update id="providerDeny" parameterType="string">
+        update provider set provider_aduit_state = '1'
+        where provider_id = #{providerId}
+    </update>
+
+    <select id="getAllWaitHeaderList" resultType="com.wangmike.chat.common.response.ProHeaderAudit">
+        select  pro.provider_id as providerId,
+                pro.provider_nick_name as providerNickName,
+                '图片' as auditType
+                from provider pro
+                inner join provider_head_image phi
+                on phi.provider_id = pro.provider_id
+                and phi.audit_state ='2' and pro.provider_aduit_state != '0' and pro.provider_aduit_state != '1'
+    </select>
+
+    <select id="queryWaitContens" resultType="map">
+         select
+            provider_id as providerId,
+            provider_nick_name as providerNickName,
+            '个人简介' as auditType,
+            provider_content  as providerContent,
+            provider_raw_content as providerRawContent
+         from
+         provider
+         where provider_aduit_state != '0' and provider_aduit_state != '1' and content_audit ='0'
+    </select>
+
+    <select id="queryVoiceLists" resultType="map">
+        select
+            pro.provider_id as providerId,
+            tc.type_id as typeId,
+            pro.provider_nick_name as providerNickName,
+            '语音审核' as auditType,
+            tc.file_path  as providerContent
+         from
+         provider pro inner join type_collection tc
+         on tc.provider_id = pro.provider_id
+         and tc.voice_audit = '0'
+         where  pro.provider_aduit_state != '0' and pro.provider_aduit_state != '1'
+    </select>
+
+    <update id="providerViocePass" >
+        update type_collection set voice_audit = '1' where provider_id =#{providerId}
+        and type_id = #{typeId}
+    </update>
+
+    <update id="providerVioceDeny" parameterType="string">
+        update type_collection set voice_audit = '2',file_path ='' where provider_id =#{providerId}
+        and type_id = #{typeId}
+    </update>
+
+    <select id="getAllProviderList" resultType="com.wangmike.chat.common.response.ProviderResponseForAdmin">
+        select
+            pro.provider_id as providerId,
+            pro.provider_nick_name as providerNickName,
+            pro.provider_sex as providerSex,
+            pro.provider_birth_day as providerBirthDay,
+            pro.provider_profession as providerProfession,
+            pro.provider_emotion as providerEmotion,
+            pro.create_time as createTime,
+            pro.provider_raw_wechat_no as providerWechatNo,
+            pro.provider_online_state as providerOnlineState,
+            pro.content_audit as contentAudit,
+            pro.provider_aduit_state as providerAduitState,
+            ifnull((select sum(wd.amount) from wallet_detail wd where wd.wallet_id = pro.wallet_id and trade_type ='4'),0)
+            as receiveAmount,
+            (select count(1) from consumer_order co where co.provider_id = pro.provider_id and co.order_state = '4' )
+             as orderCount,
+            ifnull((select sum(co.order_amount) from consumer_order co where co.provider_id = pro.provider_id
+            and co.order_state = '4' ),0)  as orderAmount
+          from
+          provider pro
+          
+
+    </select>
+
+</mapper>

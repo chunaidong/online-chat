@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="warn">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout charset="UTF-8"
+						   pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %p %c{1.} [%t] %m%n"/>
+		</Console>
+		<File name="fileLog" fileName="./logs/online-chat-server.log">
+			<PatternLayout charset="UTF-8" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %p %c{1.} [%t] %m%n"/>
+		</File>
+	</Appenders>
+	<loggers>
+		<root level="INFO">
+			<appender-ref ref="Console" />
+		</root>
+		<logger name="com.wangmike.chat.server"
+				level="DEBUG" additivity="false">
+			<appender-ref ref="Console" />
+		</logger>
+		<logger name="com.alibaba.druid.filter.stat" level="warn"
+				additivity="false">
+			<appender-ref ref="fileLog" />
+		</logger>
+	</loggers>
+</configuration>
