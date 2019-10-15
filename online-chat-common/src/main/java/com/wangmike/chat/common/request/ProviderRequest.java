@@ -58,7 +58,6 @@
    @NotBlank(message = "个人说明不允许为空")
    private String providerSignature;
    @ApiModelProperty(value = "用户所选服务类型", name = "types", required = true)
-   @NotNull(message = "服务类型不允许为空")
    private List<String> types;
    @ApiModelProperty(value = "经度", name = "providerLastLoginLat")
    private BigDecimal providerLastLoginLat;
