@@ -233,9 +233,9 @@ public class ProviderServiceImpl implements ProviderService {
 
         /* 207 */
         List<ProviderType> typeList = this.typeCollocationService.getProviderTypes(openId);
-        /* 208 */
-        providerResponseForMy.setTypeList(typeList);
-        /* 209 */
+        if(null != typeList && typeList.size() >0){
+            providerResponseForMy.setTypeList(typeList);
+        }
         return ResponseUtils.buildSuccessResoonse(providerResponseForMy);
     }
 
@@ -390,6 +390,11 @@ public class ProviderServiceImpl implements ProviderService {
     /* 366 */
     public void updateType(TypeCollection updateType) {
         this.providerMapper.updateType(updateType);
+    }
+
+    @Override
+    public int getIsProvider(String openId) {
+        return providerMapper.getIsProvider(openId);
     }
 
 

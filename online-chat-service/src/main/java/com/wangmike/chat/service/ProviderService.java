@@ -39,6 +39,8 @@ public interface ProviderService {
   CommonResponse updateTypeList(List<String> paramList, String paramString);
   
   void updateType(TypeCollection paramTypeCollection);
+
+  int getIsProvider(String openId);
 }
 
 

@@ -1,6 +1,7 @@
  package com.wangmike.chat.common.response;
 
  import com.wangmike.chat.common.entity.ProviderType;
+ import com.wangmike.chat.common.utils.ResponseEnumUtils;
  import io.swagger.annotations.ApiModel;
  import io.swagger.annotations.ApiModelProperty;
  import java.io.Serializable;
@@ -70,10 +71,30 @@
    private String providerSignature;
    @ApiModelProperty(value = "是否被当前用户收藏", name = "isMarked")
    private boolean isMarked;
+     @ApiModelProperty(value = "情感状况", name = "providerEmotion")
+     private String providerEmotion;
+     private String providerEmotionName;
    private List<String> headsLists;
    private List<ProviderType> typeList;
 
-/*  76 */   public boolean isMarked() { return this.isMarked; }
+     public String getProviderEmotion() {
+         return providerEmotion;
+     }
+
+     public void setProviderEmotion(String providerEmotion) {
+         this.providerEmotion = providerEmotion;
+         this.providerEmotionName = ResponseEnumUtils.getEmotionStateEnum(this.providerEmotion);
+     }
+
+     public String getProviderEmotionName() {
+         return providerEmotionName;
+     }
+
+     public void setProviderEmotionName(String providerEmotionName) {
+         this.providerEmotionName = providerEmotionName;
+     }
+
+     /*  76 */   public boolean isMarked() { return this.isMarked; }
 
 
 

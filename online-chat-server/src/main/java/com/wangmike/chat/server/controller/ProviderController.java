@@ -125,6 +125,13 @@ public class ProviderController {
         return ResponseUtils.buildSuccessResoonse(insertPath);
     }
 
+    @GetMapping("/getIsProvider")
+    public int getIsProvider(HttpServletRequest request){
+        String openId = request.getHeader("openId");
+        int isProvider = providerService.getIsProvider(openId);
+        return isProvider;
+    }
+
 
     @PostMapping({"/uploadVoice"})
     public CommonResponse uploadVoice(HttpServletRequest request, @RequestParam("file") MultipartFile[] files) {

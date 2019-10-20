@@ -43,7 +43,6 @@
    @NotBlank(message = "性别不允许为空")
    private String providerSex;
    @ApiModelProperty(value = "三围", name = "providerStature", required = true)
-   @NotBlank(message = "三围不允许为空")
    private String providerStature;
    @ApiModelProperty(value = "职业", name = "providerProfession", required = true)
    @NotBlank(message = "职业不允许为空")

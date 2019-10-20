@@ -98,6 +98,8 @@ public interface ProviderMapper {
   void providerViocePass(@Param("providerId") String paramString1, @Param("typeId") String paramString2);
   
   void providerVioceDeny(@Param("providerId") String paramString1, @Param("typeId") String paramString2);
+
+  int getIsProvider(String openId);
 }
 
 
