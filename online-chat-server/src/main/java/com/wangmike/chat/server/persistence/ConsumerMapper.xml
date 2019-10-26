@@ -110,4 +110,16 @@
         select total_amount from wallet where wallet_id = (select  wallet_id from consumer where consumer_id =#{openId})
     </select>
 
+    <select id="getConsumerData" parameterType="string" resultType="com.wangmike.chat.common.response.ConsumerForAdmin">
+         SELECT
+             consumer_nick_name as consumerNickName,
+             consumer_sex as sex,
+             consumer_birth_day as birthDay,
+             consumer_vip_level as level,
+             create_time as registryDay
+          from
+          consumer
+          where  consumer_id = #{openId}
+    </select>
+
 </mapper>

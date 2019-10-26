@@ -233,7 +233,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         /* 207 */
         List<ProviderType> typeList = this.typeCollocationService.getProviderTypes(openId);
-        if(null != typeList && typeList.size() >0){
+        if (null != typeList && typeList.size() > 0) {
             providerResponseForMy.setTypeList(typeList);
         }
         return ResponseUtils.buildSuccessResoonse(providerResponseForMy);
@@ -364,14 +364,6 @@ public class ProviderServiceImpl implements ProviderService {
     public CommonResponse updateTypeList(List<String> types, String openId) {
         /* 345 */
         this.typeCollocationService.deleteTypes(openId);
-
-
-
-
-
-
-
-
         /* 354 */
         List<TypeCollection> type = (List) types.stream().map(typeId -> {
             TypeCollection typeCollection = new TypeCollection();

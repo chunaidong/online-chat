@@ -73,10 +73,10 @@ public class ProviderController {
         FileOutputStream fileOutputStream = null;
         InputStream inputStream = null;
         String fileName = IdGenerator.getDefaultId()
-                +files[0].getOriginalFilename().substring(files[0].getOriginalFilename().lastIndexOf("."),
+                + files[0].getOriginalFilename().substring(files[0].getOriginalFilename().lastIndexOf("."),
                 files[0].getOriginalFilename().length());
         String finalFacePath = uploadPath + "/" + fileName;
-        String insertPath="";
+        String insertPath = "";
         File outFile = new File(finalFacePath);
         if (outFile.getParentFile() != null || !outFile.getParentFile().isDirectory()) {
             outFile.getParentFile().mkdirs();
@@ -126,7 +126,7 @@ public class ProviderController {
     }
 
     @GetMapping("/getIsProvider")
-    public int getIsProvider(HttpServletRequest request){
+    public int getIsProvider(HttpServletRequest request) {
         String openId = request.getHeader("openId");
         int isProvider = providerService.getIsProvider(openId);
         return isProvider;
@@ -145,14 +145,14 @@ public class ProviderController {
         /* 128 */
         String uploadPath = this.filePath + "/" + openId + "/audio";
 
-        String insertPath="";
+        String insertPath = "";
         /* 130 */
         FileOutputStream fileOutputStream = null;
         /* 131 */
         InputStream inputStream = null;
 
         /* 133 */
-        String fileName = IdGenerator.getDefaultId() +files[0].getOriginalFilename().substring(files[0].getOriginalFilename().lastIndexOf("."),
+        String fileName = IdGenerator.getDefaultId() + files[0].getOriginalFilename().substring(files[0].getOriginalFilename().lastIndexOf("."),
                 files[0].getOriginalFilename().length());
 
         /* 135 */

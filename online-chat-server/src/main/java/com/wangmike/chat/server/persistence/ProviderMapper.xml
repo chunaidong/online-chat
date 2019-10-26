@@ -93,7 +93,7 @@
             pro.provider_content as providerContent,
             pro.provider_stature as providerStature,
             pro.provider_profession as providerProfession,
-            pro.provider_signature as providerSignature
+            pro.provider_signature as providerSignature,
             pro.provider_emotion as providerEmotion
           from
           provider pro
@@ -113,7 +113,9 @@
             pro.provider_birth_day as providerBirthDay,
             pro.provider_signature as providerSignature,
             pro.provider_raw_wechat_no as providerRawWechatNo,
-            pro.provider_wechat_no as providerWechatNo
+            pro.provider_wechat_no as providerWechatNo,
+            provider_level as providerLevel,
+            provider_profession as providerProfession
           from
           provider pro
           where pro.provider_id = #{providerId}
