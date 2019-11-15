@@ -400,7 +400,7 @@
     </delete>
 
     <update id="updateType" parameterType="com.wangmike.chat.common.entity.TypeCollection">
-        udpate type_collection
+        update type_collection
         set file_path = #{filePath}
         ,voice_audit = #{voiceAudit}
         where provider_id = #{providerId}
